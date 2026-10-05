@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3v3 +3 Width</title>
+<title>4v4 +3 Width</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
 
@@ -69,6 +69,7 @@
     font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
     color: rgba(255,255,255,0.35);
   }
+  .zone-tag-v { writing-mode: vertical-rl; }
 
   /* Mini goals sitting on an end line */
   .mini-goal {
@@ -103,7 +104,6 @@
   }
   .player.gk {
     border-radius: 5px; font-size: 9px; border-color: rgba(255,255,255,0.65);
-    transition: none;
   }
   .player.red    { background: #C61D23; box-shadow: 0 0 8px rgba(198,29,35,0.5); }
   .player.blue   { background: #1a6eb5; box-shadow: 0 0 8px rgba(26,110,181,0.5); }
@@ -183,7 +183,7 @@
 
 
 <div class="header">
-  <h1>3v3 +3 Width</h1>
+  <h1>4v4 +3 Width</h1>
 </div>
 
 <div class="phase-label">Using The Wide Channels</div>
@@ -197,10 +197,10 @@
     <div class="penalty-bottom"></div>
     <div class="goal-top"></div>
     <div class="goal-bottom"></div>
-    <div class="zone-v" style="left:23%"></div>
-    <div class="zone-v" style="left:76%"></div>
-    <div class="zone-tag" style="top:46%;left:3px">Channel</div>
-    <div class="zone-tag" style="top:46%;right:3px">Channel</div>
+    <div class="zone-v" style="left:12.5%"></div>
+    <div class="zone-v" style="left:87.5%"></div>
+    <div class="zone-tag zone-tag-v" style="top:18%;left:11px">Channel</div>
+    <div class="zone-tag zone-tag-v" style="top:18%;right:11px">Channel</div>
   </div>
 
   <div class="goal-flash" id="goalFlash"></div>
@@ -238,7 +238,6 @@
   <div class="legend-item"><div class="legend-dot red"></div>Red</div>
   <div class="legend-item"><div class="legend-dot blue"></div>Blue</div>
   <div class="legend-item"><div class="legend-dot yellow"></div>Yellow — neutral</div>
-  <div class="legend-item"><div class="legend-dot orange"></div>Neutral GKs</div>
 </div>
 
 <div class="step-indicators" id="stepDots"></div>
@@ -259,21 +258,69 @@ function ctr(pos){ return [ pos[0]+12, pos[1]+12 ]; }
 function shape(pts){ return pts.map(pt => p(pt[0], pt[1])); }
 
 const TEAMS = [{key:'red', colour:'red', count:3}, {key:'blue', colour:'blue', count:3}, {key:'yellow', colour:'yellow', count:3}];
-const GKS   = [{colour:'orange', x:50, y:6}, {colour:'orange', x:50, y:94}];
+const GKS   = [{colour:'red', x:50, y:6}, {colour:'blue', x:50, y:94}];
 
 const RED_SET = shape([[36,32],[53,35],[62,66]]);
-const BLUE_SET = shape([[39,56],[56,57],[64,41]]);
-const YELLOW_SET = shape([[13,53],[86,49],[47,50]]);
+const BLUE_SET = shape([[42,75],[60,75],[64,50]]);
+const YELLOW_SET = shape([[6.25,53],[93.75,49],[47,50]]);
 
 // ── Phases ────────────────────────────────────────────────────────────
 const phases = [
   {
-    desc:"3v3 in the middle with a neutral in each wide channel and one central. Neutral keeper in each goal.",
+    desc:"4v4 — a keeper and three outfield players a side — with a neutral in each wide channel and one central.",
     showGoal:false, showTransition:false,
     red:RED_SET,
     blue:BLUE_SET,
     yellow:YELLOW_SET,
     ball:b(53,39)
+  },
+  {
+    desc:"Red 2 plays across to Red 1. Blue 3 slides left along the halfway line into the space Yellow 3 was in, and Yellow 3 drops two steps.",
+    showGoal:false, showTransition:true,
+    red:RED_SET,
+    blue:shape([[42,75],[60,75],[47,50]]),
+    yellow:shape([[6.25,53],[93.75,49],[47,57]]),
+    ball:b(36,35.6),
+    runs:[['blue', p(64,50), p(47,50)]]
+  },
+  {
+    desc:"Red 1 plays wide to Yellow 1, who carries it down the channel. Blue 1 shifts left to the dotted line, and Yellow 1 stops short of Blue 1. Red 1 and Red 2 push up towards halfway; the top keeper steps out to the edge of the box.",
+    showGoal:false, showTransition:true,
+    red:shape([[36,43],[53,43],[62,66]]),
+    blue:shape([[18,75],[60,75],[47,50]]),
+    yellow:shape([[6.25,64],[93.75,49],[47,57]]),
+    gk:[[50,14],[50,94]],
+    ball:b(6.25,67.6),
+    runs:[['blue', p(42,75), p(18,75)], ['red', p(36,32), p(36,43)], ['red', p(53,35), p(53,43)]]
+  },
+  {
+    desc:"Red 3 comes diagonally left and down between Blue 1 and Blue 2 to receive from Yellow 1. Yellow 3 runs right and down to stand alongside Blue 2, and Yellow 2 drops two steps.",
+    showGoal:false, showTransition:true,
+    red:shape([[36,43],[53,43],[43,71]]),
+    blue:shape([[18,75],[60,75],[47,50]]),
+    yellow:shape([[6.25,64],[93.75,56],[71.5,75]]),
+    gk:[[50,14],[50,94]],
+    ball:b(37.7,72.4),
+    runs:[['red', p(62,66), p(43,71)]]
+  },
+  {
+    desc:"Red 3 slips the pass between Blue 1 and Blue 2, and Yellow 3 runs onto it in behind. Red 1 and Red 2 step up onto the halfway line either side of Blue 3.",
+    showGoal:false, showTransition:true,
+    red:shape([[35,50],[59,50],[43,71]]),
+    blue:shape([[18,75],[60,75],[47,50]]),
+    yellow:shape([[6.25,64],[93.75,56],[56,85]]),
+    gk:[[50,14],[50,94]],
+    ball:b(52,87.6),
+    runs:[['red', p(36,43), p(35,50)], ['red', p(53,43), p(59,50)]]
+  },
+  {
+    desc:"Yellow 3 finishes across the keeper into the bottom left corner. The ball went through the wide channel first, so it counts double.",
+    showGoal:true, showTransition:false, scoringTeam:['yellow','red'],
+    red:shape([[35,50],[59,50],[43,71]]),
+    blue:shape([[18,75],[60,75],[47,50]]),
+    yellow:shape([[6.25,64],[93.75,56],[56,85]]),
+    gk:[[50,14],[50,94]],
+    ball:b(42,101)
   }
 ];
 
@@ -308,12 +355,7 @@ function mkPlayer(colour, label, isGK){
 }
 
 function createAll(){
-  GKS.forEach(function(g){
-    const el = mkPlayer(g.colour, 'GK', true);
-    const pos = p(g.x, g.y);
-    el.style.left = pos[0]+'px';
-    el.style.top  = pos[1]+'px';
-  });
+  els.gk = GKS.map(function(g){ return mkPlayer(g.colour, "GK", true); });
   TEAMS.forEach(function(t){
     for(let i=0;i<t.count;i++) els[t.key].push(mkPlayer(t.colour, String(i+1), false));
   });
@@ -334,14 +376,23 @@ function applyPhase(idx){
       el.style.top  = ph[t.key][i][1]+'px';
     });
   });
+  // GKs hold their spot unless a phase gives them one (gk: [[x,y], [x,y]] in field %)
+  els.gk.forEach(function(el,i){
+    const g = (ph.gk && ph.gk[i]) || [GKS[i].x, GKS[i].y];
+    const pos = p(g[0], g[1]);
+    el.style.left = pos[0]+"px";
+    el.style.top  = pos[1]+"px";
+  });
   els.ball.style.left = ph.ball[0]+'px';
   els.ball.style.top  = ph.ball[1]+'px';
 
   document.getElementById('goalFlash').classList.toggle('show', ph.showGoal);
   document.getElementById('goalText').classList.toggle('show', ph.showGoal);
-  if(ph.showGoal && ph.scoringTeam && els[ph.scoringTeam]){
-    els[ph.scoringTeam].forEach(function(el){
-      el.classList.add('pulse'); setTimeout(function(){el.classList.remove('pulse');},1800);
+  if(ph.showGoal && ph.scoringTeam){
+    [].concat(ph.scoringTeam).forEach(function(team){
+      (els[team]||[]).forEach(function(el){
+        el.classList.add("pulse"); setTimeout(function(){el.classList.remove("pulse");},1800);
+      });
     });
   }
 
